@@ -13,10 +13,11 @@ interface IMonitorStackProps extends StackProps {
     readonly evaluationPeriods: number;
     readonly threshold: number;
     readonly metricName: string;
-    readonly metricNamespace: string;
+    readonly metricNamespace: 'AWS/Lambda' | 'AWS/ApiGateway';
     readonly metricPeriod: number;
     readonly metricStatistic: 'Sum';
     readonly metricUnit: Unit;
+    readonly dimesionsMapApiName?: string; // Optional property for the API name dimension
 }
 
 /**
@@ -42,6 +43,7 @@ interface IMonitorStackProps extends StackProps {
  *  - `metricPeriod`: The period over which the specified statistic is applied.
  *  - `metricStatistic`: The statistic to apply to the metric (e.g., `Sum`).
  *  - `metricUnit`: The unit of the metric being monitored.
+ *  - `dimesionsMapApiName`: The API name dimension for the metric (optional).
  */
 export class MonitorStack extends Stack {
     constructor(
@@ -58,6 +60,7 @@ export class MonitorStack extends Stack {
             metricPeriod,
             metricStatistic,
             metricUnit,
+            dimesionsMapApiName, // Destructure dimesionsMapApiName from props
             ...props
         }: IMonitorStackProps
     ) {
@@ -79,6 +82,9 @@ export class MonitorStack extends Stack {
                 period: Duration.minutes(metricPeriod),
                 statistic: metricStatistic,
                 unit: metricUnit,
+                dimensionsMap: {
+                    ApiName: dimesionsMapApiName || '',
+                },
             }),
         });
 

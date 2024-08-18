@@ -57,4 +57,5 @@ new MonitorStack(app, 'MonitorStack', {
     metricStatistic: 'Sum',
     metricUnit: Unit.COUNT,
     threshold: 1,
+    dimesionsMapApiName: 'SpaceFinderApi',
 });
