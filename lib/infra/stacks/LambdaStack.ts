@@ -1,6 +1,6 @@
 import { Stack, StackProps, Duration } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
-import { Runtime } from 'aws-cdk-lib/aws-lambda';
+import { Runtime, Tracing } from 'aws-cdk-lib/aws-lambda';
 import { join } from 'path';
 import { LambdaIntegration } from 'aws-cdk-lib/aws-apigateway';
 import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs';
@@ -14,6 +14,7 @@ interface LambdaStackProps extends StackProps {
     readonly environment?: { [key: string]: string };
     readonly runtime?: Runtime;
     readonly timeout?: number;
+    readonly tracing?: boolean;
 }
 
 /**
@@ -32,6 +33,7 @@ interface LambdaStackProps extends StackProps {
  *  - `entryPoint`: The path to the entry point file for the Lambda function handler.
  *  - `policyActions`: An optional list of actions to be allowed by the Lambda function's IAM policy.
  *  - `policiyResources`: An optional list of resources for which the actions are allowed by the IAM policy.
+ *  - `tracing`: Optional trace your execution in with AWS X-Ray.
  *  - `environment`: Optional environment variables to set for the Lambda function.
  *  - `runtime`: Optional runtime environment for the Lambda function. Defaults to `Runtime.NODEJS_20_X`.
  *  - `timeout`: Optional timeout for the Lambda function execution in seconds. Defaults to 30 seconds.
@@ -51,6 +53,7 @@ export class LambdaStack extends Stack {
             policyActions = ['*'],
             policiyResources = ['*'],
             timeout = 30,
+            tracing = false,
             ...props
         }: LambdaStackProps
     ) {
@@ -62,6 +65,7 @@ export class LambdaStack extends Stack {
             handler: 'handler',
             environment,
             timeout: Duration.seconds(timeout),
+            tracing: tracing ? Tracing.ACTIVE : Tracing.DISABLED,
         });
 
         lambda.addToRolePolicy(

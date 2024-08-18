@@ -4,13 +4,15 @@ import {
     Context,
 } from 'aws-lambda';
 import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
+import { captureAWSv3Client } from 'aws-xray-sdk-core';
+
 import { postSpaces } from './PostSpaces';
 import { getSpaces } from './GetSpaces';
 import { updateSpace } from './UpdateSpace';
 import { deleteSpace } from './DeleteSpace';
 import { JsonError, MissingFieldError } from '../../shared/Validator';
 
-const ddbClient = new DynamoDBClient({});
+const ddbClient = captureAWSv3Client(new DynamoDBClient({}));
 
 async function handler(
     event: APIGatewayProxyEvent,
